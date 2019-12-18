@@ -1,0 +1,15 @@
+strong {
+    color: #009fe3
+}
+
+.wp-block-algebrakit-algebrakit-exercise {
+    border: 2px solid #3895D3;
+    padding: 20px;
+}
+
+form {
+    background-image: url('./img/Tandwielen.png');
+    background-position: right; 
+    background-size: contain;
+    background-repeat: no-repeat;
+}
