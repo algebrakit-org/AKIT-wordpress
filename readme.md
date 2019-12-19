@@ -1,6 +1,6 @@
-# AlgebraKiT Moodle Plugin
+# AlgebraKiT WordPress Plugin
 
-A Plugin to enable AlgebraKiT exercises on wordpress websites.
+A Plugin to enable AlgebraKiT exercises on WordPress websites.
 
 Installation instructions for this plugin can be found here: (https://docs.algebrakit-learning.com/plugins/wordpress/)
 
