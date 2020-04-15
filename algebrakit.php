@@ -64,6 +64,18 @@ function akitPost($url, $data, $apiKey): array {
         )
     );
     $response = wp_remote_post($url, $args);
+    $body = json_decode(wp_remote_retrieve_body($response));
+    if (!is_array($body) && isset($body->success) && $body->success == false) {
+        $sess = new SessionResponse();
+        $sess->success = false;
+        $sess->msg = 'Unkown error';
+        if (isset($body->error)) {
+            $sess->msg = $body->error;
+        }
+        return [
+            $sess
+        ];
+    }
     return json_decode(wp_remote_retrieve_body($response));
 }
 
@@ -115,7 +127,10 @@ function render_akit($attributes) {
             }
         } else if ($ex != null) {
             $html .= "Failed to generate session for exercise";
-            if (isset($ex->sessions) && isset($ex->sessions[0]) && isset($ex->sessions[0]->msg)) {
+            if (isset($ex->msg)) {
+                $html.= ": ".$ex->msg;
+            }
+            else if (isset($ex->sessions) && isset($ex->sessions[0]) && isset($ex->sessions[0]->msg)) {
                 $html.= ": ".$ex->sessions[0]->msg;
             }
             else {
