@@ -3,6 +3,9 @@ function loadJs() {
     script.src = "https://widgets.algebrakit.eu/akit-widgets.min.js";
     document.body.appendChild(script);
 }
+
+
+
 if (typeof(AlgebraKIT) == 'undefined') {
     var AlgebraKIT = {
         config: {

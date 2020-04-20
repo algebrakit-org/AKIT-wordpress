@@ -122,8 +122,9 @@ function render_akit($attributes) {
         if($ex->success) {
             for($nn=0; $nn < count($ex->sessions); $nn++) {
                 // The session object contains an html property which can be directly inserted into the page, automatically rendering the widget
+                $sessionId = $ex->sessions[$nn]->sessionId;
                 $html .= '<br><br>';
-                $html .= $ex->sessions[$nn]->html;
+                $html .= "<akit-exercise session-id='$sessionId'></akit-exercise>";
             }
         } else if ($ex != null) {
             $html .= "Failed to generate session for exercise";
