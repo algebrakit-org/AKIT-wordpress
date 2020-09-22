@@ -108,6 +108,7 @@ function createSession($exerciseId, $majorVersion) {
 function render_akit($attributes) {
     $exerciseId = $attributes['exerciseId'];
     $majorVersion = $attributes['majorVersion'];
+    $solutionMode = $attributes['solutionMode'];
     
     //First, create the session
     $session = createSession($exerciseId, $majorVersion);
@@ -123,8 +124,11 @@ function render_akit($attributes) {
             for($nn=0; $nn < count($ex->sessions); $nn++) {
                 // The session object contains an html property which can be directly inserted into the page, automatically rendering the widget
                 $sessionId = $ex->sessions[$nn]->sessionId;
+                $solutionModeAttr = $solutionMode
+                    ? ' solution-mode'
+                    : '';
                 $html .= '<br><br>';
-                $html .= "<akit-exercise session-id='$sessionId'></akit-exercise>";
+                $html .= "<akit-exercise session-id='$sessionId'$solutionModeAttr></akit-exercise>";
             }
         } else if ($ex != null) {
             $html .= "Failed to generate session for exercise";
@@ -182,6 +186,9 @@ function akit_register_block() {
             ),
             'majorVersion' => array(
                 'type'      => 'string',
+            ),
+            'solutionMode' => array(
+                'type'      => 'boolean',
             ),
         ),
         'render_callback' => 'render_akit',

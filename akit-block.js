@@ -9,6 +9,7 @@
         edit: function (props) {
             var exerciseId = props.attributes.exerciseId;
             var majorVersion = props.attributes.majorVersion;
+            var solutionMode = props.attributes.solutionMode;
 
             function onChangeExerciseId(event) {
                 props.setAttributes({ exerciseId: event.target.value });
@@ -16,6 +17,10 @@
 
             function onChangemajorVersion(event) {
                 props.setAttributes({ majorVersion: event.target.value });
+            }
+
+            function onChangeSolutionMode(event) {
+                props.setAttributes({ solutionMode: event.target.checked });
             }
 
             return el('form', { className: props.className },
@@ -29,6 +34,10 @@
                     el('tr', null, 
                         el('td', null, el('label', null, 'Major Version ')),
                         el('td', null, el('input', { id: 'majorVersion', name: 'majorVersion', 'type': 'text', 'placeholder': 'Major Version', onChange: onChangemajorVersion, value: majorVersion })),
+                    ),
+                    el('tr', null, 
+                        el('td', null, el('label', null, 'Solution mode ')),
+                        el('td', null, el('input', { id: 'solutionMode', name: 'solutionMode', 'type': 'checkbox', onChange: onChangeSolutionMode, value: solutionMode })),
                     )
                 )
             )
