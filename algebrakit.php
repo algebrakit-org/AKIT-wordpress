@@ -127,7 +127,6 @@ function render_akit($attributes) {
                 $solutionModeAttr = $solutionMode
                     ? ' solution-mode'
                     : '';
-                $html .= '<br><br>';
                 $html .= "<akit-exercise session-id='$sessionId'$solutionModeAttr></akit-exercise>";
             }
         } else if ($ex != null) {
