@@ -123,11 +123,15 @@ function render_akit($attributes) {
         if($ex->success) {
             for($nn=0; $nn < count($ex->sessions); $nn++) {
                 // The session object contains an html property which can be directly inserted into the page, automatically rendering the widget
-                $sessionId = $ex->sessions[$nn]->sessionId;
-                $solutionModeAttr = $solutionMode
-                    ? ' solution-mode'
-                    : '';
-                $html .= "<akit-exercise session-id='$sessionId'$solutionModeAttr></akit-exercise>";
+                if($solutionMode) {
+                    $sessionId = $ex->sessions[$nn]->sessionId;
+                    $html = $ex->sessions[$nn]->html;
+                    $html .= "<akit-exercise session-id='$sessionId' solution-mode></akit-exercise>";
+    
+                } else {
+                    // This saves an extra roundtrip: all initialization data is contained in the html returned from AlgebraKiT. 
+                    $html .= $ex->sessions[$nn]->html;
+                }
             }
         } else if ($ex != null) {
             $html .= "Failed to generate session for exercise";
