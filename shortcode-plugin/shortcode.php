@@ -14,9 +14,16 @@ function akit_exercise_shortcode($atts = array()) {
     else {
         $exVersion = 'latest';
     }
+    if (array_key_exists('solution-mode', $atts)) {
+        $exSolution = $atts['solution-mode']=='true';
+    }
+    else {
+        $exSolution = false;
+    }
+
     $exId = $atts['exercise-id'];
 
-    $exTag = addExerciseRef($exId, $exVersion, false);
+    $exTag = addExerciseRef($exId, $exVersion, $exSolution);
     return $exTag; // "<akit-exercise cached-ref="..."></akit-exercise>";
 }
 
