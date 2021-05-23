@@ -1,0 +1,163 @@
+<?php
+/**
+ * Every request to the akit API returns an object with this structure
+ */
+class SessionResponse {
+    public $success;
+    public $msg;
+    public $sessions;
+}
+
+/**
+ * Request body for a request to create a session for an exercise
+ */
+class CreateSessionRequestBody {
+    public $apiVersion = 2;
+
+    /**
+     * Should be an array of ExerciseDef objects
+     */
+    public $exercises;
+
+    public function __construct(array $exercises) {
+        $this->exercises = $exercises;
+    }
+}
+
+/**
+ * Tuple containing exercise ID and version
+ */
+class ExerciseDef {
+    public $exerciseId;
+    public $version;
+    public $solutionMode;
+
+    public function __construct($exerciseId, $version, $solutionMode) {
+        $this->exerciseId = $exerciseId;
+        $this->solutionMode = $solutionMode;
+        $this->version = isset($version) && !empty($version) ? $version : 'latest';
+    }
+}
+
+/**
+ * Post to the akit API. 
+ * @param string $url
+ * @param CreateSessionRequestBody $data
+ * @param string $apiKey
+ * @return array An array of SessionResponse objects
+ */
+function akitPost($url, $data, $host, $apiKey): array {
+    $url  = $host.$url;
+    $dataString = json_encode($data);
+
+    $args = array(
+        'body' => $dataString,
+        'headers' => array(
+            "Content-type" => "application/json", 
+            "x-api-key" => $apiKey
+        )
+    );
+    $response = wp_remote_post($url, $args);
+    $body = json_decode(wp_remote_retrieve_body($response));
+    if (!is_array($body) && isset($body->success) && $body->success == false) {
+        $sess = new SessionResponse();
+        $sess->success = false;
+        $sess->msg = 'Unkown error';
+        if (isset($body->error)) {
+            $sess->msg = $body->error;
+        }
+        return [
+            $sess
+        ];
+    }
+    return json_decode(wp_remote_retrieve_body($response));
+}
+
+/** store a new reference to an exercise in the exercise map, which is stored
+ *  in the session. The exercises in the map will be created by init_sessions().
+ */
+function addExerciseRef($exId, $exVersion, $isSolution) {
+    $placeHolder = uniqid('', true);
+
+    if (isset($_SESSION['akit_exercise-map'])) {
+        $map = $_SESSION['akit_exercise-map'];
+    }
+    else {
+        $map = [];
+    }
+    
+    $map[$placeHolder] = new ExerciseDef($exId, $exVersion, $isSolution);
+
+    $_SESSION['akit_exercise-map'] = $map;
+
+    return $isSolution
+        ?"<akit-exercise cached-ref=\"$placeHolder\" solution-mode></akit-exercise>"
+        :"<akit-exercise cached-ref=\"$placeHolder\"></akit-exercise>";
+}
+
+
+/** call /sessions/create of the AlgebraKiT API to create a session for all exercises
+ *  in the exercise map. */
+function init_sessions() {
+    // obtain the map with all exercise references in this page, if any
+    if (!isset($_SESSION['akit_exercise-map'])) return; 
+    $map = $_SESSION['akit_exercise-map'];
+
+    $apiKey = get_option('akit_api_key'); 
+    if ($apiKey == null) {
+        ?>
+        <script>alert('AlgebraKIT API-Key was not set')</script>
+        <?php
+        return;
+    }
+
+    $host = "https://algebrakit.eu";
+    $widgetHost = "https://widgets.algebrakit.eu";
+    $theme = get_option("akit_theme");
+    if($theme==null) $theme="akit";
+
+    $exList = [];
+    foreach (array_values($map) as $ex) {
+        array_push($exList, $ex);
+    }
+
+    $data = new CreateSessionRequestBody($exList);
+    $response = akitPost('/session/create', $data, $host, $apiKey);
+
+    $resultMap = [];
+
+    //create map from cached-ref to session data
+    for ($i = 0; $i < count($response); $i++) {
+        $responseEntry = $response[$i];
+        $exDef = $exList[$i];
+        if ($responseEntry->success == false || !isset($responseEntry->sessions)) {
+            continue;
+        }
+        foreach($responseEntry->sessions as $session) {
+            if ($session->success == false) {
+                continue;
+            }
+            //Find the chachedRef for this exercise
+            $cachedRef = array_search($exDef, $map);
+            $resultMap[$cachedRef] = $exDef->solutionMode
+                ?'<akit-exercise session-id="'.$session->sessionId.'" solution-mode></akit-exercise>'
+                :$session->html;
+        }
+    }
+
+    $widgetLoaderJs = file_get_contents(plugin_dir_path( __FILE__ ) . 'widgetLoader.js');
+    $widgetLoaderJs = str_replace('${WIDGET_HOST}', $widgetHost, $widgetLoaderJs);
+    $widgetLoaderJs = str_replace('${THEME}', $theme, $widgetLoaderJs);
+
+    ?>
+    <script>
+        <?php echo $widgetLoaderJs ?>
+        AlgebraKIT.cachedRefMap = <?php echo json_encode($resultMap) ?>;
+    </script>
+    <?php
+
+    $_SESSION['akit_exercise-map'] = null;
+}
+
+// make sure init_sessions() is called once when the page is created
+add_action('wp_footer', 'init_sessions');

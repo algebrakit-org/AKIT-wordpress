@@ -29,15 +29,21 @@
                 el('table', null, 
                     el('tr', null, 
                         el('td', null, el('label', null, 'Exercise ID ')),
+                    ),
+                    el('tr', null, 
                         el('td', null, el('input', { id: 'exerciseId', name: 'exerciseId', 'type': 'text', 'placeholder': 'Exercise ID', onChange: onChangeExerciseId, value: exerciseId })),
                     ),
                     el('tr', null, 
                         el('td', null, el('label', null, 'Major Version ')),
+                    ),
+                    el('tr', null, 
                         el('td', null, el('input', { id: 'majorVersion', name: 'majorVersion', 'type': 'text', 'placeholder': 'Major Version', onChange: onChangemajorVersion, value: majorVersion })),
                     ),
                     el('tr', null, 
-                        el('td', null, el('label', null, 'Solution mode ')),
-                        el('td', null, el('input', { id: 'solutionMode', name: 'solutionMode', 'type': 'checkbox', onChange: onChangeSolutionMode, value: solutionMode })),
+                        el('td', null, 
+                            el('input', { id: 'solutionMode', name: 'solutionMode', 'type': 'checkbox', onChange: onChangeSolutionMode, checked: solutionMode }),
+                            el('label', null, 'Solution mode ')
+                        ),
                     )
                 )
             )
