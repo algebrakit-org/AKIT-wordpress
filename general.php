@@ -18,6 +18,9 @@ class CreateSessionRequestBody {
      * Should be an array of ExerciseDef objects
      */
     public $exercises;
+    public $attributes = array(
+        "integration-mode" => true
+    );
 
     public function __construct(array $exercises) {
         $this->exercises = $exercises;
@@ -70,7 +73,7 @@ function akitPost($url, $data, $host, $apiKey): array {
             $sess
         ];
     }
-    return json_decode(wp_remote_retrieve_body($response));
+    return $body;
 }
 
 /** store a new reference to an exercise in the exercise map, which is stored
@@ -93,6 +96,41 @@ function addExerciseRef($exId, $exVersion, $isSolution) {
     return $isSolution
         ?"<akit-exercise cached-ref=\"$placeHolder\" solution-mode></akit-exercise>"
         :"<akit-exercise cached-ref=\"$placeHolder\"></akit-exercise>";
+}
+/** store a new reference to an interaction in an exercise in the exercise map, if the exercise 
+ * does not already exist. The exercises in the map will be created by init_sessions().
+ */
+function addInteractionRef($exId, $refId, $exVersion, $isSolution) {
+
+    if (isset($_SESSION['akit_exercise-map'])) {
+        $map = $_SESSION['akit_exercise-map'];
+    }
+    else {
+        $map = [];
+    }
+    
+    // check if the exercise is already present
+    $exDef = null;
+    $placeHolder = null;
+
+    foreach ($map as $key => $value) {
+        if(strcmp($value->exerciseId, $exId)==0) {
+            $exDef = $value;
+            $placeHolder = $key;
+            break;
+        }
+    }    
+    if($exDef==null) {
+        $placeHolder = uniqid('', true);
+        $exDef = new ExerciseDef($exId, $exVersion, $isSolution);
+        $map[$placeHolder] = $exDef;
+    }
+
+    $_SESSION['akit_exercise-map'] = $map;
+
+    return $isSolution
+        ?"<akit-interaction cached-ref=\"$placeHolder\" ref-id=\"$refId\" solution-mode></akit-interaction>"
+        :"<akit-interaction cached-ref=\"$placeHolder\" ref-id=\"$refId\"></akit-interaction>";
 }
 
 
@@ -127,21 +165,19 @@ function init_sessions() {
     $resultMap = [];
 
     //create map from cached-ref to session data
-    for ($i = 0; $i < count($response); $i++) {
+    for ($i = 0; $i < count($response); $i++) {  // for each requested exercise-id...
         $responseEntry = $response[$i];
         $exDef = $exList[$i];
         if ($responseEntry->success == false || !isset($responseEntry->sessions)) {
             continue;
         }
-        foreach($responseEntry->sessions as $session) {
+        foreach($responseEntry->sessions as $session) { // for each session created for this exercise...
             if ($session->success == false) {
                 continue;
             }
             //Find the chachedRef for this exercise
             $cachedRef = array_search($exDef, $map);
-            $resultMap[$cachedRef] = $exDef->solutionMode
-                ?'<akit-exercise session-id="'.$session->sessionId.'" solution-mode></akit-exercise>'
-                :$session->html;
+            $resultMap[$cachedRef] = $session;
         }
     }
 
