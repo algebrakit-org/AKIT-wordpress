@@ -149,8 +149,8 @@ function init_sessions() {
         return;
     }
 
-    $host = "https://algebrakit.eu";
-    $widgetHost = "https://widgets.algebrakit.eu";
+    $host = "https://api.algebrakit.com";
+    $widgetHost = "https://widgets.algebrakit.com";
     $theme = get_option("akit_theme");
     if($theme==null) $theme="akit";
 
