@@ -20,10 +20,22 @@ function akit_exercise_shortcode($atts = array()) {
     else {
         $exSolution = false;
     }
+    if (array_key_exists('repeat-button', $atts)) {
+        $repeatButton = $atts['repeat-button']=='true';
+    }
+    else {
+        $repeatButton = false;
+    }
+    if (array_key_exists('edit-button', $atts)) {
+        $editButton = $atts['edit-button']=='true';
+    }
+    else {
+        $editButton = false;
+    }
 
     $exId = $atts['exercise-id'];
 
-    $exTag = addExerciseRef($exId, $exVersion, $exSolution);
+    $exTag = addExerciseRef($exId, $exVersion, $exSolution, $repeatButton, $editButton);
     return $exTag; // "<akit-exercise cached-ref="..."></akit-exercise>";
 }
 

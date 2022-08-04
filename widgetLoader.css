@@ -1,0 +1,26 @@
+akit-wp-exercise {
+    display: block;
+    position: relative;
+}
+
+akit-wp-exercise .wp-akit-buttonbar {
+    display: flex;
+    justify-content: flex-end;    
+}
+
+akit-wp-exercise .wp-akit-repeat {
+    text-align: right;
+}
+
+.wp-akit-button {
+    padding:5px;
+    margin-left: 3px;
+    margin-right:3px;
+    border-radius: 4px;
+    background-color: #ccc;
+    color: #333;
+}
+.wp-akit-button:hover {
+    background-color: #ddd;
+    color: #555;
+}

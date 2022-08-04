@@ -5,8 +5,9 @@ function render_akit($attributes) {
     $exerciseId = $attributes['exerciseId'];
     $majorVersion = $attributes['majorVersion'];
     $solutionMode = $attributes['solutionMode'];
+    $repeatButton = $attributes['repeat-button']; // to do: add to gutenberg UI
     
-    $exTag = addExerciseRef($exerciseId, $majorVersion, $solutionMode); // "<akit-exercise cached-ref="..."></akit-exercise>";
+    $exTag = addExerciseRef($exerciseId, $majorVersion, $solutionMode, $repeatButton, false); // "<akit-exercise cached-ref="..."></akit-exercise>";
 
     return $exTag;
 }
