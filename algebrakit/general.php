@@ -79,7 +79,7 @@ function akitPost($url, $data, $host, $apiKey): array {
 /** store a new reference to an exercise in the exercise map, which is stored
  *  in the session. The exercises in the map will be created by init_sessions().
  */
-function addExerciseRef($exId, $exVersion, $isSolution) {
+function addExerciseRef($exId, $exVersion, $isSolution, $showSolutionButton) {
     $placeHolder = uniqid('', true);
 
     if (isset($_SESSION['akit_exercise-map'])) {
@@ -92,10 +92,11 @@ function addExerciseRef($exId, $exVersion, $isSolution) {
     $map[$placeHolder] = new ExerciseDef($exId, $exVersion, $isSolution);
 
     $_SESSION['akit_exercise-map'] = $map;
+    $attrs = '';
+    if($isSolution) $attrs = $attrs.'solution-mode ';
+    if($showSolutionButton) $attrs = $attrs.'show-solution-button ';
 
-    return $isSolution
-        ?"<akit-exercise cached-ref=\"$placeHolder\" solution-mode></akit-exercise>"
-        :"<akit-exercise cached-ref=\"$placeHolder\"></akit-exercise>";
+    return "<div class='akit-wrapper'><akit-exercise cached-ref=\"$placeHolder\" $attrs></akit-exercise></div>";
 }
 /** store a new reference to an interaction in an exercise in the exercise map, if the exercise 
  * does not already exist. The exercises in the map will be created by init_sessions().
@@ -129,8 +130,8 @@ function addInteractionRef($exId, $refId, $exVersion, $isSolution) {
     $_SESSION['akit_exercise-map'] = $map;
 
     return $isSolution
-        ?"<akit-interaction cached-ref=\"$placeHolder\" ref-id=\"$refId\" solution-mode></akit-interaction>"
-        :"<akit-interaction cached-ref=\"$placeHolder\" ref-id=\"$refId\"></akit-interaction>";
+        ?"<div class='akit-wrapper'><akit-interaction cached-ref=\"$placeHolder\" ref-id=\"$refId\" solution-mode></akit-interaction></div>"
+        :"<div class='akit-wrapper'><akit-interaction cached-ref=\"$placeHolder\" ref-id=\"$refId\"></akit-interaction></div>";
 }
 
 
@@ -150,7 +151,9 @@ function init_sessions() {
     }
 
     $host = "https://api.algebrakit.com";
-    $widgetHost = "https://widgets.algebrakit.com";
+    $widgetHost = "https://widgets.algebrakit.com/akit-widgets.min.js";
+    // $host = "http://localhost:3000";
+    // $widgetHost = "http://localhost:4000/akit-widgets.js";
     $theme = get_option("akit_theme");
     if($theme==null) $theme="akit";
 
@@ -181,15 +184,19 @@ function init_sessions() {
         }
     }
 
-    $widgetLoaderJs = file_get_contents(plugin_dir_path( __FILE__ ) . 'widgetLoader.js');
-    $widgetLoaderJs = str_replace('${WIDGET_HOST}', $widgetHost, $widgetLoaderJs);
-    $widgetLoaderJs = str_replace('${THEME}', $theme, $widgetLoaderJs);
-
+    $widgetLoaderJs = file_get_contents(plugin_dir_path( __FILE__ ) .'akitConfig.js');
+    $addCss = file_get_contents(plugin_dir_path( __FILE__ ) .'akit.css');
+    $initJs = file_get_contents(plugin_dir_path( __FILE__ ) . 'akitInit.js');
     ?>
+
+    <style><?php echo $addCss ?></style>
     <script>
         <?php echo $widgetLoaderJs ?>
         AlgebraKIT.cachedRefMap = <?php echo json_encode($resultMap) ?>;
     </script>
+    <script src="<?php echo $widgetHost ?>"></script>
+    <script><?php echo $initJs?></script>
+
     <?php
 
     $_SESSION['akit_exercise-map'] = null;

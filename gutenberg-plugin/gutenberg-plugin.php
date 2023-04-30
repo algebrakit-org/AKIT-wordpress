@@ -5,8 +5,9 @@ function render_akit($attributes) {
     $exerciseId = $attributes['exerciseId'];
     $majorVersion = $attributes['majorVersion'];
     $solutionMode = $attributes['solutionMode'];
+    $solutionButton = $attributes['solutionButton'];
     
-    $exTag = addExerciseRef($exerciseId, $majorVersion, $solutionMode); // "<akit-exercise cached-ref="..."></akit-exercise>";
+    $exTag = addExerciseRef($exerciseId, $majorVersion, $solutionMode, $solutionButton); // "<akit-exercise cached-ref="..."></akit-exercise>";
 
     return $exTag;
 }
@@ -43,6 +44,9 @@ function akit_register_block() {
                 'type'      => 'string',
             ),
             'solutionMode' => array(
+                'type'      => 'boolean',
+            ),
+            'solutionButton' => array(
                 'type'      => 'boolean',
             ),
         ),

@@ -7,7 +7,7 @@
  */
 
 
-include('general.php');                           // general types and functionality
+include('algebrakit/general.php');                // general types and functionality
 include('settings.php');                          // defines settings page
 include('gutenberg-plugin/gutenberg-plugin.php'); // defines the AlgebraKiT component for the Gutenberg editor
 include('shortcode-plugin/shortcode.php');        // defines a shortcode for AlgebraKiT for all other Wordpress editors

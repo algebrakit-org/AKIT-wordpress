@@ -20,10 +20,17 @@ function akit_exercise_shortcode($atts = array()) {
     else {
         $exSolution = false;
     }
+    if (array_key_exists('solution-button', $atts)) {
+        $showSolutionButton = $atts['solution-button']=='true';
+    }
+    else {
+        $showSolutionButton = false;
+    }
+
 
     $exId = $atts['exercise-id'];
 
-    $exTag = addExerciseRef($exId, $exVersion, $exSolution);
+    $exTag = addExerciseRef($exId, $exVersion, $exSolution, $showSolutionButton);
     return $exTag; // "<akit-exercise cached-ref="..."></akit-exercise>";
 }
 
