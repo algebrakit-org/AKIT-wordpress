@@ -21,7 +21,7 @@ class CreateSessionRequestBody {
     public $attributes = array(
         "integration-mode" => true
     );
-
+    public $requireLockForSolution = false;
     public function __construct(array $exercises) {
         $this->exercises = $exercises;
     }
