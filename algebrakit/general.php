@@ -79,7 +79,7 @@ function akitPost($url, $data, $host, $apiKey): array {
 /** store a new reference to an exercise in the exercise map, which is stored
  *  in the session. The exercises in the map will be created by init_sessions().
  */
-function addExerciseRef($exId, $exVersion, $isSolution, $showSolutionButton) {
+function addExerciseRef($exId, $exVersion, $isSolution, $showSolutionButton, $showRepeatButton, $showEditButton, $exActivate, $handwriting) {
     $placeHolder = uniqid('', true);
 
     if (isset($_SESSION['akit_exercise-map'])) {
@@ -95,13 +95,16 @@ function addExerciseRef($exId, $exVersion, $isSolution, $showSolutionButton) {
     $attrs = '';
     if($isSolution) $attrs = $attrs.'solution-mode ';
     if($showSolutionButton) $attrs = $attrs.'show-solution-button ';
-
+    if($showRepeatButton) $attrs = $attrs.'show-repeat-button ';
+    if($showEditButton) $attrs = $attrs.'show-edit-button ';
+    if($exActivate) $attrs = $attrs.'start-active ';
+    if($handwriting) $attrs = $attrs.'handwriting="'.$handwriting.'" ';
     return "<div class='akit-wrapper'><akit-exercise cached-ref=\"$placeHolder\" $attrs></akit-exercise></div>";
 }
 /** store a new reference to an interaction in an exercise in the exercise map, if the exercise 
  * does not already exist. The exercises in the map will be created by init_sessions().
  */
-function addInteractionRef($exId, $refId, $exVersion, $isSolution) {
+function addInteractionRef($exId, $refId, $exVersion, $isSolution, $exActivate, $handwriting) {
 
     if (isset($_SESSION['akit_exercise-map'])) {
         $map = $_SESSION['akit_exercise-map'];
@@ -128,10 +131,12 @@ function addInteractionRef($exId, $refId, $exVersion, $isSolution) {
     }
 
     $_SESSION['akit_exercise-map'] = $map;
+    $attrs = '';
+    if($isSolution) $attrs = $attrs.'solution-mode ';
+    if($exActivate) $attrs = $attrs.'start-active ';
+    if($handwriting) $attrs = $attrs.'handwriting="'.$handwriting.'" ';
 
-    return $isSolution
-        ?"<div class='akit-wrapper'><akit-interaction cached-ref=\"$placeHolder\" ref-id=\"$refId\" solution-mode></akit-interaction></div>"
-        :"<div class='akit-wrapper'><akit-interaction cached-ref=\"$placeHolder\" ref-id=\"$refId\"></akit-interaction></div>";
+    return "<div class='akit-wrapper'><akit-interaction cached-ref=\"$placeHolder\" ref-id=\"$refId\" $attrs></akit-interaction></div>";
 }
 
 

@@ -26,11 +26,34 @@ function akit_exercise_shortcode($atts = array()) {
     else {
         $showSolutionButton = false;
     }
+    if (array_key_exists('repeat-button', $atts)) {
+        $showRepeatButton = $atts['repeat-button']=='true';
+    }
+    else {
+        $showRepeatButton = false;
+    }
+    if (array_key_exists('edit-button', $atts)) {
+        $showEditButton = $atts['edit-button']=='true';
+    }
+    else {
+        $showEditButton = false;
+    }
 
+    if (array_key_exists('activate', $atts)) {
+        $exActivate = $atts['activate']=='true';
+    } else {
+        $exActivate = false;
+    }
+
+    if (array_key_exists('handwriting', $atts)) {
+        $handwriting = $atts['handwriting'];
+    } else {
+        $handwriting = false;
+    }
 
     $exId = $atts['exercise-id'];
 
-    $exTag = addExerciseRef($exId, $exVersion, $exSolution, $showSolutionButton);
+    $exTag = addExerciseRef($exId, $exVersion, $exSolution, $showSolutionButton, $showRepeatButton, $showEditButton, $exActivate, $handwriting);
     return $exTag; // "<akit-exercise cached-ref="..."></akit-exercise>";
 }
 
@@ -58,11 +81,22 @@ function akit_interaction_shortcode($atts = array()) {
     else {
         $exSolution = false;
     }
+    if (array_key_exists('activate', $atts)) {
+        $exActivate = $atts['activate']=='true';
+    } else {
+        $exActivate = false;
+    }
+
+    if (array_key_exists('handwriting', $atts)) {
+        $handwriting = $atts['handwriting'];
+    } else {
+        $handwriting = false;
+    }
 
     $exId = $atts['exercise-id'];
     $refId= $atts['ref-id'];
     
-    $exTag = addInteractionRef($exId, $refId, $exVersion, $exSolution);
+    $exTag = addInteractionRef($exId, $refId, $exVersion, $exSolution, $exActivate, $handwriting);
     return $exTag; // "<akit-interaction cached-ref="..." ref-id=".."></akit-interaction>";
 }
 

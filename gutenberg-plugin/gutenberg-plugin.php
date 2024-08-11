@@ -6,8 +6,10 @@ function render_akit($attributes) {
     $majorVersion = $attributes['majorVersion'];
     $solutionMode = $attributes['solutionMode'];
     $solutionButton = $attributes['solutionButton'];
+    $repeatButton = $attributes['repeatButton'];
+    $editButton = $attributes['editButton'];
     
-    $exTag = addExerciseRef($exerciseId, $majorVersion, $solutionMode, $solutionButton); // "<akit-exercise cached-ref="..."></akit-exercise>";
+    $exTag = addExerciseRef($exerciseId, $majorVersion, $solutionMode, $solutionButton, $repeatButton, $editButton, false, false); // "<akit-exercise cached-ref="..."></akit-exercise>";
 
     return $exTag;
 }
@@ -47,6 +49,12 @@ function akit_register_block() {
                 'type'      => 'boolean',
             ),
             'solutionButton' => array(
+                'type'      => 'boolean',
+            ),
+            'repeatButton' => array(
+                'type'      => 'boolean',
+            ),
+            'editButton' => array(
                 'type'      => 'boolean',
             ),
         ),
